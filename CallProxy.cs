@@ -29,7 +29,21 @@ namespace Assignment1_ONT412
             if (_currentUserRole == UserRole.Student || _currentUserRole == UserRole.Technician || _currentUserRole == UserRole.Manager)
             {
                 Console.WriteLine($"Proxy: Logging call attempt from {caller} to {receiver} by {_currentUserRole}.");
-                return _realCallOperation.MakeCall(caller, receiver);
+                return _realCallOperation.MakeCall(caller, receiver, _currentUserRole, _currentUserRole.ToString().ToLower());
+            }
+            else
+            {
+                Console.WriteLine("Proxy: Unauthorized. Cannot make call.");
+                return null;
+            }
+        }
+
+        public Call? MakeCall(string caller, string receiver, UserRole initiatedBy, string initiatedByUsername)
+        {
+            if (_currentUserRole == UserRole.Student || _currentUserRole == UserRole.Technician || _currentUserRole == UserRole.Manager)
+            {
+                Console.WriteLine($"Proxy: Logging call attempt from {caller} to {receiver} by {initiatedByUsername} ({initiatedBy}).");
+                return _realCallOperation.MakeCall(caller, receiver, initiatedBy, initiatedByUsername);
             }
             else
             {
@@ -51,16 +65,17 @@ namespace Assignment1_ONT412
             }
         }
 
-        public void ReturnCall(Call call)
+        public Call? ReturnCall(Call call)
         {
             if (_currentUserRole == UserRole.Manager)
             {
                 Console.WriteLine($"Proxy: Logging return call attempt for {call.Caller} to {call.Receiver} by {_currentUserRole}.");
-                _realCallOperation.ReturnCall(call);
+                return _realCallOperation.ReturnCall(call);
             }
             else
             {
                 Console.WriteLine("Proxy: Unauthorized. Only managers can return calls.");
+                return null;
             }
         }
     }

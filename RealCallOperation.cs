@@ -21,6 +21,14 @@ namespace Assignment1_ONT412
             return newCall;
         }
 
+        public Call? MakeCall(string caller, string receiver, UserRole initiatedBy, string initiatedByUsername)
+        {
+            Call newCall = new Call(caller, receiver, initiatedBy, initiatedByUsername);
+            _callLog.AddEntry(newCall);
+            Console.WriteLine($"Call initiated by {caller} to {receiver} by {initiatedByUsername} ({initiatedBy}).");
+            return newCall;
+        }
+
         public void DropCall(Call call)
         {
             if (call != null && (call.GetStatus() == "On Call" || call.GetStatus() == "On Hold"))
@@ -38,11 +46,13 @@ namespace Assignment1_ONT412
             }
         }
 
-        public void ReturnCall(Call call)
+        public Call? ReturnCall(Call call)
         {
             Console.WriteLine($"RealOperation: Manager returning call from {call.Caller} to {call.Receiver}.");
-           
-            _callLog.AddEntry(new Call(call.Receiver, call.Caller)); 
+
+            Call returnedCall = new Call(call.Receiver, call.Caller);
+            _callLog.AddEntry(returnedCall);
+            return returnedCall;
         }
     }
 }

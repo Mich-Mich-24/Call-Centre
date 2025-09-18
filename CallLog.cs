@@ -68,7 +68,8 @@ namespace Assignment1_ONT412
             {
                 if (entry is Call call)
                 {
-                    lines.Add($"{call.Caller},{call.Receiver},{call.StartTime.ToString("o")},{call.GetDuration().TotalSeconds}");
+                    // Save with user information for new format, maintain backward compatibility
+                    lines.Add($"{call.Caller},{call.Receiver},{call.StartTime.ToString("o")},{call.GetDuration().TotalSeconds},{(int)call.InitiatedBy},{call.InitiatedByUsername}");
                 }
             }
             File.WriteAllLines(_logFilePath, lines);
@@ -83,15 +84,28 @@ namespace Assignment1_ONT412
                 foreach (string line in lines)
                 {
                     var parts = line.Split(',');
-                    if (parts.Length == 4)
+                    if (parts.Length >= 4)
                     {
                         string caller = parts[0];
                         string receiver = parts[1];
                         DateTime startTime = DateTime.Parse(parts[2]);
                         TimeSpan duration = TimeSpan.FromSeconds(double.Parse(parts[3]));
 
-                        Call loadedCall = new Call(caller, receiver, startTime, duration);
-                        _callEntries.Add(loadedCall);
+                        // Handle backward compatibility for old format (4 fields)
+                        if (parts.Length == 4)
+                        {
+                            Call loadedCall = new Call(caller, receiver, startTime, duration);
+                            _callEntries.Add(loadedCall);
+                        }
+                        // Handle new format with user information (6 fields)
+                        else if (parts.Length >= 6)
+                        {
+                            UserRole initiatedBy = (UserRole)int.Parse(parts[4]);
+                            string initiatedByUsername = parts[5];
+
+                            Call loadedCall = new Call(caller, receiver, startTime, duration, initiatedBy, initiatedByUsername);
+                            _callEntries.Add(loadedCall);
+                        }
                     }
                 }
             }

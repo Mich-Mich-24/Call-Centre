@@ -6,6 +6,6 @@ namespace Assignment1_ONT412
     {
         Call? MakeCall(string caller, string receiver);
         void DropCall(Call call);
-        void ReturnCall(Call call);
+        Call? ReturnCall(Call call);
     }
 }

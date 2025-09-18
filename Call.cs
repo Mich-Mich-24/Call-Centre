@@ -11,6 +11,8 @@ namespace Assignment1_ONT412
         public string Caller { get; private set; }
         public string Receiver { get; private set; }
         public DateTime StartTime { get; private set; }
+        public UserRole InitiatedBy { get; private set; }
+        public string InitiatedByUsername { get; private set; }
 
         public Call(string caller, string receiver)
         {
@@ -18,6 +20,8 @@ namespace Assignment1_ONT412
             Receiver = receiver;
             StartTime = DateTime.Now;
             _currentState = new OnCallState(TimeSpan.Zero);
+            InitiatedBy = UserRole.None;
+            InitiatedByUsername = string.Empty;
         }
 
         public Call(string caller, string receiver, DateTime startTime, TimeSpan duration)
@@ -26,6 +30,28 @@ namespace Assignment1_ONT412
             Receiver = receiver;
             StartTime = startTime;
             _currentState = new OnCallState(duration);
+            InitiatedBy = UserRole.None;
+            InitiatedByUsername = string.Empty;
+        }
+
+        public Call(string caller, string receiver, UserRole initiatedBy, string initiatedByUsername)
+        {
+            Caller = caller;
+            Receiver = receiver;
+            StartTime = DateTime.Now;
+            _currentState = new OnCallState(TimeSpan.Zero);
+            InitiatedBy = initiatedBy;
+            InitiatedByUsername = initiatedByUsername;
+        }
+
+        public Call(string caller, string receiver, DateTime startTime, TimeSpan duration, UserRole initiatedBy, string initiatedByUsername)
+        {
+            Caller = caller;
+            Receiver = receiver;
+            StartTime = startTime;
+            _currentState = new OnCallState(duration);
+            InitiatedBy = initiatedBy;
+            InitiatedByUsername = initiatedByUsername;
         }
 
         public void SetState(ICallState state)
@@ -63,7 +89,8 @@ namespace Assignment1_ONT412
         // The Call class implements ICallLogEntry, acting as a leaf in the composite structure.
         public string GetCallDetails()
         {
-            return $"Caller: {Caller}, Receiver: {Receiver}, Status: {GetStatus()}, Duration: {GetDuration():hh':'mm':'ss}";
+            string userInfo = string.IsNullOrEmpty(InitiatedByUsername) ? "" : $", Initiated by: {InitiatedByUsername} ({InitiatedBy})";
+            return $"Caller: {Caller}, Receiver: {Receiver}, Status: {GetStatus()}, Duration: {GetDuration():hh':'mm':'ss}{userInfo}";
         }
 
         public TimeSpan GetTotalDuration()
